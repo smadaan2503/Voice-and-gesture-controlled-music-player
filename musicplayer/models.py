@@ -8,3 +8,6 @@ class SongsData(models.Model):
     Audio = models.FileField(upload_to = 'musics/')
     Thumbnail = models.ImageField(upload_to = 'thumbnails/')
     Category = models.CharField(max_length = 100)
+
+    def __str__(self):
+        return self.Name

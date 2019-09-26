@@ -6,5 +6,20 @@
 </head>
 <body>
     <h1> This is the musicplayer homepage. </h1>
+    <div class = "songs">
+        {% for song in songs %}
+            <div class = "song">
+                <p>{{song.Name}}</p>
+                <p>{{song.Singer}}</p>
+                <audio controls>
+                    <source src="{{song.Audio.url}}">
+                </audio>
+                <p>{{song.Audio}}</p>
+                <img src="{{song.Thumbnail.url}}" width="100" height="75"></p>
+                <p>{{song.Category}}</p>
+                {{song.Lyrics}}
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
