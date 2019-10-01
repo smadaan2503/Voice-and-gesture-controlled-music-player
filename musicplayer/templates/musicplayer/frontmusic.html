@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Player</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        html{
+            height:100%;
+        }
+        body{
+            height:100%;
+            margin: 0;
+            background-color: #7fcec5;
+            background-image: linear-gradient(315deg, #7fcec5 0%, #14557b 74%);
+            background-repeat: no-repeat;
+        }
+        #head{
+            color:white;
+        }
+        .card{
+            margin-left: 300px;
+            margin-top:170px;
+        }
+        .songs{
+            margin-left: 290px;
+            margin-top:60px;
+        }
+        .wrapper{
+            display:flex;
+        }
+        #left{
+            flex: 0 0 55%;
+        }
+        #right{
+            flex: 1;
+            margin-top: 60px;
+        }
+    </style>
+    <script>
+        document.addEventListener('keydown', function(event) {
+            var x = event.keyCode;
+            var y = String.fromCharCode(x);
+            if(y=='S' || y=='G')
+            {
+                $.ajax({
+                    url: "{% url 'musicplayer:homepage' %}",
+                    method: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'key_code' : y
+                    },
+                    success: function (data) {
+                        alert(data.result);
+			        }
+                });
+            }
+        });
+    </script>
+
+</head>
+<body>
+<nav class="navbar nnavbar-dark bg-dark">
+    <a class="navbar-brand" id="head">Harmony</a>
+    <form class="form-inline">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+</nav>
+<div class="wrapper">
+    <div id="left">
+        <div class="card" style="width: 18rem;">
+            <img src="" class="card-img-top" alt="...">
+            <div class="card-body">
+                <p class="card-text"><b>Song Name</b><br>Singer Name<br>Genre Name</p>
+            </div>
+        </div>
+        <div class = "songs">
+            <audio controls>
+                <source src="{{song.Audio.url}}">
+            </audio>
+        </div>
+    </div>
+    <div id="right">
+        Lyrics here
+    </div>
+</div>
+</body>
+</html>

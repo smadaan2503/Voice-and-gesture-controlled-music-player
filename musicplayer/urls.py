@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+app_name = 'musicplayer'
+
 urlpatterns = [
-    path('', views.homepage),
+    path('', views.homepage, name="homepage"),
 ]
