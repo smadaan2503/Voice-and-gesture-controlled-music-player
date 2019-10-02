@@ -41,7 +41,21 @@ def speechtotext(duration):
 def homepage(request):
     if request.method == 'GET':
         songs = SongsData.objects.all()
+        songs = list(songs)
+        list_of_songs = []
+        for song in songs:
+            song_dict = dict()
+            song_dict['Name'] = song.Name
+            song_dict['Singer'] = song.Singer
+            lyrics = song.Lyrics.split("\r\n")
+            song_dict['Lyrics'] = lyrics
+            song_dict['Audio'] = song.Audio
+            song_dict['Thumbnail'] = song.Thumbnail
+            song_dict['Category'] = song.Category
+            list_of_songs.append(song_dict)
+            songs = list_of_songs
         return render(request, 'musicplayer/frontmusic.html', {'songs':songs})
+
     else:
         key = request.POST.get('key_code')
         print("char pressed = " + key)

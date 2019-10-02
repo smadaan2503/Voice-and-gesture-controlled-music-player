@@ -19,30 +19,56 @@
         #head{
             color:white;
         }
-        .card{
-            margin-left: 300px;
-            margin-top:170px;
-        }
         .songs{
-            margin-left: 290px;
-            margin-top:60px;
+            margin-top: 50px;
         }
-        .wrapper{
+        .container{
             display:flex;
         }
+        #playlists{
+            width:40%;
+            padding-left: 40px;
+        }
         #left{
-            flex: 0 0 55%;
+            margin-top:70px;
+            padding-left: 200px;
+            padding-right: 40px;
         }
         #right{
-            flex: 1;
-            margin-top: 60px;
+            width:30%;
+            margin-top:50px;
+            margin-left: 40px;
         }
+        .img-thumbnail{
+            width:200px;
+            height:200px;
+            margin-top:30px;
+            align-content: : center;
+        }
+        #bun
+        {
+            margin-top: 60px;
+            margin-left:17px;
+        }
+        .dropdown:hover .dropdown-content {
+        display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+         background-color: #3e8e41;
+}
     </style>
     <script>
         document.addEventListener('keydown', function(event) {
             var x = event.keyCode;
-            var y = String.fromCharCode(x);
-            if(y=='S' || y=='G')
+            var y;
+            if(x==27)
+                y = "Esc";
+            if(x==32)
+                y = "Space";
+            console.log(x);
+            console.log(y);
+            if(y=="Esc" || y=="Space")
             {
                 $.ajax({
                     url: "{% url 'musicplayer:homepage' %}",
@@ -57,33 +83,103 @@
                 });
             }
         });
-    </script>
 
+        function playSong(song_name)
+        {
+                var newField;
+                var newField1
+                {% for song in songs %}
+                    if('{{song.Name}}' == song_name)
+                    {
+                        newField = "<div class='card' style='width: 18rem;'> <img src=" + '{{song.Thumbnail.url}}';
+                        newField += " class='card-img-top' alt='...'> <div class='card-body'> <p class='card-text'><b>" + '{{song.Name}}';
+                        newField += "</b><br>";
+                        newField += '{{song.Singer}}';
+                        newField += "<br>";
+                        newField += '{{song.Category}}';
+                        newField += "</p>" +
+                                "</div>" +
+                           "</div>" +
+                           "<div class = 'songs'>" +
+                                "<audio controls>" +
+                                    "<source src=" + '{{song.Audio.url}}' + ">" +
+                                "</audio>" +
+                           "</div>" +
+                           "<button type='button' class='btn btn-light' id='bun'>Previous</button>" +
+                           "<button type='button' class='btn btn-light' id='bun'>Next</button>";
+                                var lyrics = {{song.Lyrics|safe}};
+                                var lyr = "";
+                               for(var i=0; i<lyrics.length; i++)
+                               {
+                                    lyr += lyrics[i] + "<br>";
+                               }
+                               newField1 = lyr;
+                    }
+                {% endfor %}
+            console.log(newField);
+            var div = document.getElementById('left');
+            div.innerHTML = newField;
+
+            div = document.getElementById('right');
+            div.innerHTML = newField1;
+        }
+    </script>
 </head>
 <body>
-<nav class="navbar nnavbar-dark bg-dark">
+    <nav class="navbar nnavbar-dark bg-dark">
     <a class="navbar-brand" id="head">Harmony</a>
-    <form class="form-inline">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+     <form class="form-inline">
+    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
-</nav>
-<div class="wrapper">
-    <div id="left">
-        <div class="card" style="width: 18rem;">
-            <img src="" class="card-img-top" alt="...">
-            <div class="card-body">
-                <p class="card-text"><b>Song Name</b><br>Singer Name<br>Genre Name</p>
+    </nav>
+<div class="container">
+    <div id="playlist">
+        <img src="media/pop.jpg" alt="pop" class="img-thumbnail">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle ropdownbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Pop Songs
+            </button>
+            <div class="dropdown-menu dropdown-content" aria-labelledby="dropdownMenuButton">
+                {% for song in songs %}
+                    {% if song.Category == "Pop" %}
+<!--                        {{song|safe}}-->
+                        <a class="dropdown-item" onclick="playSong( '{{song.Name}}' )" >{{song.Name}}</a>
+                    {%endif%}
+                {%endfor%}
             </div>
         </div>
-        <div class = "songs">
-            <audio controls>
-                <source src="{{song.Audio.url}}">
-            </audio>
+        <img src="media/love.jpg" alt="love" class="img-thumbnail">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle ropdownbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Romantic Songs
+            </button>
+            <div class="dropdown-menu dropdown-content" aria-labelledby="dropdownMenuButton">
+               {% for song in songs %}
+                    {% if song.Category == "Romance" %}
+                        <a class="dropdown-item" onclick="playSong( '{{song.Name}}' )">{{song.Name}}</a>
+                    {%endif%}
+                {%endfor%}
+            </div>
+        </div>
+        <img src="media/party.jpg" alt="party" class="img-thumbnail">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle dropdownbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Party Songs
+            </button>
+           <div class="dropdown-menu dropdown-content" aria-labelledby="dropdownMenuButton">
+               {% for song in songs %}
+                    {% if song.Category == "Party" %}
+                        <a class="dropdown-item" onclick="playSong( '{{song.Name}}' )">{{song.Name}}</a>
+                    {%endif%}
+                {%endfor%}
+            </div>
+
         </div>
     </div>
+    <div id="left">
+    </div>
     <div id="right">
-        Lyrics here
     </div>
 </div>
 </body>
