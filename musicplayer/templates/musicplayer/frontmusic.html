@@ -51,14 +51,20 @@
             margin-left:17px;
         }
         .dropdown:hover .dropdown-content {
-        display: block;
+            display: block;
         }
 
         .dropdown:hover .dropbtn {
-         background-color: #3e8e41;
-}
+            background-color: #3e8e41;
+        }
+        .scroll{
+            height:100px;
+            width:300px;
+            overflow: scroll;
+        }
     </style>
     <script>
+        var currSong = "";
         document.addEventListener('keydown', function(event) {
             var x = event.keyCode;
             var y;
@@ -78,16 +84,112 @@
                         'key_code' : y
                     },
                     success: function (data) {
-                        alert(data.result);
+                        if(data.result.play == 'true')
+                        {
+                            playSong(data.result.song_name);
+                            var audioPlayer = document.getElementById("myAudio");
+                            audioPlayer.play();
+                        }
+                        else if(data.result.pause == 'true')
+                        {
+                            var audioPlayer = document.getElementById("myAudio");
+                            audioPlayer.pause();
+                        }
+                        else if(data.result.next == 'true')
+                        {
+                            playNext();
+                            var audioPlayer = document.getElementById("myAudio");
+                            audioPlayer.play();
+                        }
+                        else if(data.result.previous == 'true')
+                        {
+                            playPrevious();
+                            var audioPlayer = document.getElementById("myAudio");
+                            audioPlayer.play();
+                        }
+                        else if(data.result.current == 'true')
+                        {
+                            var audioPlayer = document.getElementById("myAudio");
+                            audioPlayer.play();
+                        }
+                        else if(data.result.play_pause == 'true')
+                        {
+                            if(currSong == "")
+                            {
+                                playNext();
+                                var audioPlayer = document.getElementById("myAudio");
+                                audioPlayer.play();
+                            }
+                            else
+                            {
+                                var audioPlayer = document.getElementById("myAudio");
+                                if(audioPlayer.paused)
+                                    audioPlayer.play();
+                                else
+                                    audioPlayer.pause();
+                            }
+                        }
+                        else if(data.result.volume == 'true')
+                        {
+                            if(currSong != "")
+                            {
+                                var audioPlayer = document.getElementById("myAudio");
+                                audioPlayer.volume = parseFloat(data.result.percent);
+                            }
+                        }
 			        }
                 });
             }
         });
 
+        function playNext()
+        {
+            var found=0;
+            if(currSong == "")
+            {
+                found = 1;
+            }
+            {% for song in songs %}
+                if(found==1)
+                {
+                    playSong('{{song.Name}}');
+                    return;
+                }
+                if('{{song.Name}}' == currSong)
+                {
+                    found=1;
+                }
+            {% endfor %}
+        }
+
+        function playPrevious()
+        {
+            if(currSong == "")
+                return;
+            var found=0;
+            var next_song= "";
+            var count=0;
+            {% for song in songs %}
+                if('{{song.Name}}' == currSong)
+                {
+                    if(count==0)
+                        return;
+                    playSong(next_song);
+                    return;
+                }
+                else
+                {
+                    next_song = '{{song.Name}}';
+                }
+                count++;
+            {% endfor %}
+        }
+
         function playSong(song_name)
         {
                 var newField;
-                var newField1
+                var newField1;
+                currSong = song_name;
                 {% for song in songs %}
                     if('{{song.Name}}' == song_name)
                     {
@@ -101,22 +203,25 @@
                                 "</div>" +
                            "</div>" +
                            "<div class = 'songs'>" +
-                                "<audio controls>" +
+                                "<audio controls id='myAudio'>" +
                                     "<source src=" + '{{song.Audio.url}}' + ">" +
                                 "</audio>" +
                            "</div>" +
-                           "<button type='button' class='btn btn-light' id='bun'>Previous</button>" +
-                           "<button type='button' class='btn btn-light' id='bun'>Next</button>";
-                                var lyrics = {{song.Lyrics|safe}};
-                                var lyr = "";
-                               for(var i=0; i<lyrics.length; i++)
-                               {
-                                    lyr += lyrics[i] + "<br>";
-                               }
-                               newField1 = lyr;
+                           "<button type='button' class='btn btn-light' id='bun' onclick='playPrevious()'>Previous</button>" +
+                           "<button type='button' class='btn btn-light' id='bun' onclick='playNext()'>Next</button>";
+
+                        var lyrics = {{song.Lyrics|safe}};
+                        var lyr = "<div class='overflow-auto' id='scroll'><center><b> Sing Along </b> </center><br>";
+                        for(var i=0; i<lyrics.length; i++)
+                        {
+                            lyr += lyrics[i] + "<br>";
+                        }
+                        lyr += "</div>";
+<!--                    console.log(lyr);-->
+                        newField1 = lyr;
                     }
                 {% endfor %}
-            console.log(newField);
+<!--            console.log(newField);-->
             var div = document.getElementById('left');
             div.innerHTML = newField;
 
@@ -129,15 +234,15 @@
     <nav class="navbar nnavbar-dark bg-dark">
     <a class="navbar-brand" id="head">Harmony</a>
      <form class="form-inline">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+<!--    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">-->
+<!--    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>-->
     </form>
     </nav>
 <div class="container">
     <div id="playlist">
         <img src="media/pop.jpg" alt="pop" class="img-thumbnail">
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle ropdownbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle dropdownbtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Pop Songs
             </button>
             <div class="dropdown-menu dropdown-content" aria-labelledby="dropdownMenuButton">
