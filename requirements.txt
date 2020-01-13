@@ -1,0 +1,6 @@
+docker
+django
+gtts 
+playsound
+SpeechRecognition
+pillow
